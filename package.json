@@ -1,0 +1,22 @@
+{
+  "name": "mentoring-bot",
+  "version": "1.0.0",
+  "description": "A bot for SSE mentoring during E times",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rit-sse/Mentoring-Bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rit-sse/Mentoring-Bot/issues"
+  },
+  "homepage": "https://github.com/rit-sse/Mentoring-Bot#readme",
+  "dependencies": {
+    "discord.js": "^12.0.2"
+  }
+}
