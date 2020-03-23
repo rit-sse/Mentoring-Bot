@@ -92,11 +92,42 @@ client.on('message', async msg => {
 				SPEAK: true,
 				VIEW_CHANNEL: true,
 			})
-		}).then(() => {
-			msg.reply(`Voice channel created. Please join ${voice_channel_count}-voice`)
+		}).catch(error => {
+      msg.reply(`Unable to create voice channel: ${error}`)
+      console.error()
+    });
+		msg.guild.createChannel(`${voice_channel_count}-text`, {
+			type: `text`,
+			permissionOverwrites: [
+				{
+					id: msg.guild.id,
+					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				}
+			]
+		})
+		.then(channel => {
+			channel.setParent(process.env.VOICE_PARENT_ID);
+			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
+			user = msg.member.user
+			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+			channel.overwritePermissions(user, {
+				ATTACH_FILES: true,
+				READ_MESSAGE_HISTORY: true,
+				SEND_MESSAGES: true,
+				VIEW_CHANNEL: true,
+			})
+			channel.overwritePermissions(mentor_role, {
+				ATTACH_FILES: true,
+				READ_MESSAGE_HISTORY: true,
+				SEND_MESSAGES: true,
+				VIEW_CHANNEL: true,
+			})
+		})
+		.then(() => {
+			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-      msg.reply(`Unable to create channel: ${error}`)
+      msg.reply(`Unable to create text channel: ${error}`)
       console.error()
     })
 	} else if (msg.content.toLowerCase().startsWith("!close")) {
@@ -132,9 +163,11 @@ client.on('message', async msg => {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
 				return
 			}
-			channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
-			msg.reply(`Closing ${cmds[1]}-voice`)
-			channel_to_del.delete("closing time *Insert song here*")
+			voice_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
+			text_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-text`)
+			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
+			voice_channel_to_del.delete("closing time *Insert song here*")
+			text_channel_to_del.delete("closing time *Insert song here*")
 		} else {
 			msg.reply("Insufficient Permissions")
 		}
