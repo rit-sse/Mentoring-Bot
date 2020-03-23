@@ -117,6 +117,27 @@ client.on('message', async msg => {
 		} else {
 			msg.reply("Insufficient Permissions")
 		}
+	} else if (msg.content.toLowerCase().startsWith("!delete")) {
+
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		if (found) {
+			cmds = msg.content.split(" ")
+			if (cmds.length != 2) {
+				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
+				return
+			}
+			channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
+			msg.reply(`Closing ${cmds[1]}-voice`)
+			channel_to_del.delete("closing time *Insert song here*")
+		} else {
+			msg.reply("Insufficient Permissions")
+		}
 	} else if (msg.content.toLowerCase().startsWith("!online")) {
 		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
