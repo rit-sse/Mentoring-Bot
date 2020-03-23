@@ -56,7 +56,7 @@ client.on('message', async msg => {
 			\n\b!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)\
 			\n\b!join -> Enters you in a voice channel\
 			```\
-			\n\bPlease remember the folling items:\
+			\n\bPlease remember the following items:\
 			```\
 			\n\bWe are volunteers (we don't get paid)\
 			\n\bOur hours are 10 am - 6 pm\
@@ -66,7 +66,7 @@ client.on('message', async msg => {
 		")
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
 		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
-		msg.reply(`is requesting mentoing assistance ${online}`)
+		msg.reply(`is requesting mentoring assistance ${online}`)
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
 				type: `voice`,
