@@ -49,7 +49,7 @@ client.on('message', async msg => {
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
 		msg.reply("\
-			\n\bWelcome to the eSSE's mentoring system! We're here for help.\
+			\n\bWelcome to the eSSE's mentoring system! We're here to help.\
 			\n\bHere's a few helpful commands:\
 			```\
 			\n\b!help -> See this command (but you knew that already)\
