@@ -39,6 +39,13 @@ client.on('message', async msg => {
 	if (msg.member.user.bot) {
 		return
 	}
+	let now = new Date();
+	if (now.getHours() < 9 || now.getHours > 17) {
+		if (msg.content.toLowerCase().startsWith("!")) {
+			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
+			return
+		}
+	}
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
 		msg.reply("\
@@ -58,14 +65,15 @@ client.on('message', async msg => {
 			```\
 		")
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
-		msg.reply(`is requesting mentoing assistance @here`)
+		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
+		msg.reply(`is requesting mentoing assistance ${online}`)
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
 					{
 						id: msg.guild.id,
-						deny: [`CONNECT`, `SPEAK`]
+						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					}
 				]
 		})
@@ -77,10 +85,12 @@ client.on('message', async msg => {
 			channel.overwritePermissions(user, {
 				CONNECT: true,
 				SPEAK: true,
+				VIEW_CHANNEL: true,
 			})
 			channel.overwritePermissions(mentor_role, {
 				CONNECT: true,
 				SPEAK: true,
+				VIEW_CHANNEL: true,
 			})
 		}).then(() => {
 			msg.reply(`Voice channel created. Please join ${voice_channel_count}-voice`)
@@ -107,8 +117,52 @@ client.on('message', async msg => {
 		} else {
 			msg.reply("Insufficient Permissions")
 		}
-	} else if (msg.content.toLowerCase().startsWith("!open")) {
-
+	} else if (msg.content.toLowerCase().startsWith("!online")) {
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		if (found) {
+			var online = msg.guild.roles.find(role => role.name === "Online Mentor");
+			already_online = false
+			msg.member.roles.forEach((key, value) => {
+				if (value === online.id) {
+					already_online= true;
+				}
+			});
+			if (!already_online) {
+				msg.member.addRole(online)
+				msg.reply("is now mentoring")
+			} else {
+				msg.reply("is already online")
+			}
+		}
+	} else if (msg.content.toLowerCase().startsWith("!offline")) {
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		if (found) {
+			var online = msg.guild.roles.find(role => role.name === "Online Mentor");
+			already_online = false
+			msg.member.roles.forEach((key, value) => {
+				if (value === online.id) {
+					already_online= true;
+				}
+			});
+			if (already_online) {
+				msg.member.removeRole(online)
+				msg.reply("is no longer mentoring")
+			} else {
+				msg.reply("isn't currently mentoring to begin with")
+			}
+		}
 	}
 })
 
