@@ -52,17 +52,18 @@ client.on('message', async msg => {
 			\n\bWelcome to the eSSE's mentoring system! We're here to help.\
 			\n\bHere's a few helpful commands:\
 			```\
-			\n\b!help -> See this command (but you knew that already)\
+			\b!help -> See this command (but you knew that already)\
 			\n\b!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)\
 			\n\b!join -> Enters you in a voice channel\
 			```\
 			\n\bPlease remember the following items:\
 			```\
-			\n\bWe are volunteers (we don't get paid)\
+			\bWe are volunteers (we don't get paid)\
 			\n\bOur hours are 10 am - 6 pm\
 			\n\bWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees.\
 			\n\bIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT\
 			```\
+			\n\b*If you would like to mute this channel to prevent being spammed with notifications, click the bell on the top of your screen*
 		")
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
 		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
