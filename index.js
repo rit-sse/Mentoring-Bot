@@ -55,12 +55,31 @@ client.on('message', async msg => {
 	}
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		mentor_cmds = ""
+		if (found) {
+			mentor_cmds = "\n```" +
+				"\nMentor-Only commands:" +
+				"```" +
+				"\n!online -> Sets your status so you appear as the current mentor on duty" +
+				"\n!offline -> Removes your status as the current mentor on duty" +
+				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
+				"\n!close -> Removes all existing voice and text channels" +
+				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
+		}
 		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
 			"\nHere's a few helpful commands:" +
 			"\n```" +
 			"\n!help -> See this command (but you knew that already)" +
 			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
 			"\n!join -> Enters you in a voice channel" +
+			mentor_cmds +
 			"\n```" +
 			"\nPlease remember the following items:" +
 			"\n```" +
