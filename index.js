@@ -40,30 +40,37 @@ client.on('message', async msg => {
 		return
 	}
 	let now = new Date();
-	if (now.getHours() < 9 || now.getHours > 17) {
-		if (msg.content.toLowerCase().startsWith("!")) {
+	if (now.getHours() < 9 || now.getHours() > 17) {
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		if (msg.content.toLowerCase().startsWith("!") && !found) {
 			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
 			return
 		}
 	}
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
-		msg.reply("\
-			\n\bWelcome to the eSSE's mentoring system! We're here to help.\
-			\n\bHere's a few helpful commands:\
-			```\
-			\n\b!help -> See this command (but you knew that already)\
-			\n\b!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)\
-			\n\b!join -> Enters you in a voice channel\
-			```\
-			\n\bPlease remember the following items:\
-			```\
-			\n\bWe are volunteers (we don't get paid)\
-			\n\bOur hours are 10 am - 6 pm\
-			\n\bWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees.\
-			\n\bIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT\
-			```\
-		")
+		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
+			"\nHere's a few helpful commands:" +
+			"\n```" +
+			"\n!help -> See this command (but you knew that already)" +
+			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
+			"\n!join -> Enters you in a voice channel" +
+			"\n```" +
+			"\nPlease remember the following items:" +
+			"\n```" +
+			"\nWe are volunteers (we don't get paid)" +
+			"\nOur hours are 10 am - 6 pm" +
+			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
+			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
+			"\n```" +
+			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
+		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
 		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
 		msg.reply(`is requesting mentoring assistance ${online}`)
@@ -92,11 +99,42 @@ client.on('message', async msg => {
 				SPEAK: true,
 				VIEW_CHANNEL: true,
 			})
-		}).then(() => {
-			msg.reply(`Voice channel created. Please join ${voice_channel_count}-voice`)
+		}).catch(error => {
+      msg.reply(`Unable to create voice channel: ${error}`)
+      console.error()
+    });
+		msg.guild.createChannel(`${voice_channel_count}-text`, {
+			type: `text`,
+			permissionOverwrites: [
+				{
+					id: msg.guild.id,
+					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				}
+			]
+		})
+		.then(channel => {
+			channel.setParent(process.env.VOICE_PARENT_ID);
+			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
+			user = msg.member.user
+			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+			channel.overwritePermissions(user, {
+				ATTACH_FILES: true,
+				READ_MESSAGE_HISTORY: true,
+				SEND_MESSAGES: true,
+				VIEW_CHANNEL: true,
+			})
+			channel.overwritePermissions(mentor_role, {
+				ATTACH_FILES: true,
+				READ_MESSAGE_HISTORY: true,
+				SEND_MESSAGES: true,
+				VIEW_CHANNEL: true,
+			})
+		})
+		.then(() => {
+			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-      msg.reply(`Unable to create channel: ${error}`)
+      msg.reply(`Unable to create text channel: ${error}`)
       console.error()
     })
 	} else if (msg.content.toLowerCase().startsWith("!close")) {
@@ -132,9 +170,11 @@ client.on('message', async msg => {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
 				return
 			}
-			channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
-			msg.reply(`Closing ${cmds[1]}-voice`)
-			channel_to_del.delete("closing time *Insert song here*")
+			voice_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
+			text_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-text`)
+			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
+			voice_channel_to_del.delete("closing time *Insert song here*")
+			text_channel_to_del.delete("closing time *Insert song here*")
 		} else {
 			msg.reply("Insufficient Permissions")
 		}
