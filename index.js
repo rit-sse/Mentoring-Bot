@@ -48,22 +48,22 @@ client.on('message', async msg => {
 	}
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
-		msg.reply("\
-			\n\bWelcome to the eSSE's mentoring system! We're here to help.\
-			\n\bHere's a few helpful commands:\
-			```\
-			\n\b!help -> See this command (but you knew that already)\
-			\n\b!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)\
-			\n\b!join -> Enters you in a voice channel\
-			```\
-			\n\bPlease remember the following items:\
-			```\
-			\n\bWe are volunteers (we don't get paid)\
-			\n\bOur hours are 10 am - 6 pm\
-			\n\bWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees.\
-			\n\bIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT\
-			```\
-		")
+		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
+			"\nHere's a few helpful commands:" +
+			"\n```" +
+			"\n!help -> See this command (but you knew that already)" +
+			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
+			"\n!join -> Enters you in a voice channel" +
+			"\n```" +
+			"\nPlease remember the following items:" +
+			"\n```" +
+			"\nWe are volunteers (we don't get paid)" +
+			"\nOur hours are 10 am - 6 pm" +
+			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
+			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
+			"\n```" +
+			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
+		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
 		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
 		msg.reply(`is requesting mentoring assistance ${online}`)
