@@ -40,8 +40,15 @@ client.on('message', async msg => {
 		return
 	}
 	let now = new Date();
-	if (now.getHours() < 9 || now.getHours > 17) {
-		if (msg.content.toLowerCase().startsWith("!")) {
+	if (now.getHours() < 9 || now.getHours() > 17) {
+		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+		found = false
+		msg.member.roles.forEach((key, value) => {
+			if (value === mentor_role.id) {
+				found = true;
+			}
+		});
+		if (msg.content.toLowerCase().startsWith("!") && !found) {
 			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
 			return
 		}
