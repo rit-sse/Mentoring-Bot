@@ -52,13 +52,13 @@ client.on('message', async msg => {
 			\n\bWelcome to the eSSE's mentoring system! We're here to help.\
 			\n\bHere's a few helpful commands:\
 			```\
-			\b!help -> See this command (but you knew that already)\
+			\n\b!help -> See this command (but you knew that already)\
 			\n\b!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)\
 			\n\b!join -> Enters you in a voice channel\
 			```\
 			\n\bPlease remember the following items:\
 			```\
-			\bWe are volunteers (we don't get paid)\
+			\n\bWe are volunteers (we don't get paid)\
 			\n\bOur hours are 10 am - 6 pm\
 			\n\bWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees.\
 			\n\bIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT\
