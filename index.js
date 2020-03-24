@@ -60,7 +60,7 @@ client.on('message', async msg => {
 			"\n```" +
 			"\n!help -> See this command (but you knew that already)" +
 			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
-			"\n!join -> Enters you in a voice channel" +
+			"\n!join -> Enters you in private voice and chat channels to speak one-on-one with a mentor" +
 			"\n```" +
 			"\nPlease remember the following items:" +
 			"\n```" +
