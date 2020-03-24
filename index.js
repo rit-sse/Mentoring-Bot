@@ -63,7 +63,7 @@ client.on('message', async msg => {
 			\n\bWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees.\
 			\n\bIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT\
 			```\
-			\n\b*If you would like to mute this channel to prevent being spammed with notifications, click the bell on the top of your screen*
+			\n\b*If you would like to mute this channel to prevent being spammed with notifications, click the bell on the top of your screen*\
 		")
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
 		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
