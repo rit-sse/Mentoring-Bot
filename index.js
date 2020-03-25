@@ -39,9 +39,9 @@ client.on('message', async msg => {
 	if (msg.member.user.bot) {
 		return
 	}
+	mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
@@ -55,7 +55,6 @@ client.on('message', async msg => {
 	}
 	// Now handle commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
@@ -100,24 +99,19 @@ client.on('message', async msg => {
 					{
 						id: msg.guild.id,
 						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
-					}
+					},
+					{
+						id: msg.member.user,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
+					{
+						id: mentor_role,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
 				]
-		})
-		.then(channel => {
+		}).then(channel => {
       channel.setParent(process.env.VOICE_PARENT_ID);
       channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-			channel.overwritePermissions(user, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
 		}).catch(error => {
       msg.reply(`Unable to create voice channel: ${error}`)
       console.error()
@@ -128,28 +122,20 @@ client.on('message', async msg => {
 				{
 					id: msg.guild.id,
 					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				}
+				},
+				{
+					id: msg.member.user,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
+				{
+					id: mentor_role,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
 			]
-		})
-		.then(channel => {
+		}).then(channel => {
 			channel.setParent(process.env.VOICE_PARENT_ID);
 			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-			channel.overwritePermissions(user, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-		})
-		.then(() => {
+		}).then(() => {
 			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
@@ -157,7 +143,6 @@ client.on('message', async msg => {
       console.error()
     })
 	} else if (msg.content.toLowerCase().startsWith("!close")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
@@ -175,8 +160,6 @@ client.on('message', async msg => {
 			msg.reply("Insufficient Permissions")
 		}
 	} else if (msg.content.toLowerCase().startsWith("!delete")) {
-
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
@@ -198,7 +181,6 @@ client.on('message', async msg => {
 			msg.reply("Insufficient Permissions")
 		}
 	} else if (msg.content.toLowerCase().startsWith("!online")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
@@ -221,7 +203,6 @@ client.on('message', async msg => {
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!offline")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
 		found = false
 		msg.member.roles.forEach((key, value) => {
 			if (value === mentor_role.id) {
