@@ -88,6 +88,7 @@ client.on('message', async msg => {
 			"\n!help -> See this command (but you knew that already)" +
 			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
 			"\n!join -> Enters you in private voice and chat channels to speak one-on-one with a mentor" +
+			mentor_cmds +
 			"\n```" +
 			"\nPlease remember the following items:" +
 			"\n```" +
@@ -102,28 +103,24 @@ client.on('message', async msg => {
 		msg.reply(`is requesting mentoring assistance ${online_role}`)
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
-			type: `voice`,
-			permissionOverwrites: [
-				{
-					id: msg.guild.id,
-					deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
-				}
-			]
-		})
-		.then(channel => {
-			channel.setParent(process.env.VOICE_PARENT_ID);
-			channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			channel.overwritePermissions(user, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
+				type: `voice`,
+				permissionOverwrites: [
+					{
+						id: msg.guild.id,
+						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
+					{
+						id: msg.member.user,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
+					{
+						id: mentor_role.id,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
+				]
+		}).then(channel => {
+      channel.setParent(process.env.VOICE_PARENT_ID);
+      channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
 		}).catch(error => {
 			msg.reply(`Unable to create voice channel: ${error}`)
 			console.error()
@@ -135,33 +132,26 @@ client.on('message', async msg => {
 				{
 					id: msg.guild.id,
 					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				}
+				},
+				{
+					id: msg.member.user,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
+				{
+					id: mentor_role.id,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
 			]
-		})
-		.then(channel => {
+		}).then(channel => {
 			channel.setParent(process.env.VOICE_PARENT_ID);
 			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			channel.overwritePermissions(user, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-		})
-		.then(() => {
+		}).then(() => {
 			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-			msg.reply(`Unable to create text channel: ${error}`)
-			console.error()
-		});
+      msg.reply(`Unable to create text channel: ${error}`)
+      console.error()
+    })
 	}
 
 	// Mentor specific commands
@@ -174,6 +164,7 @@ client.on('message', async msg => {
 				voice_channel_count = 0
 			})
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
+
 			cmds = msg.content.split(" ")
 			if (cmds.length != 2) {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
