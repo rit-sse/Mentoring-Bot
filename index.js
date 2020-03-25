@@ -70,15 +70,8 @@ client.on('message', async msg => {
     
     // Non-specific commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
 		mentor_cmds = ""
-		if (found) {
+		if (mentor) {
 			mentor_cmds = "\n```" +
 				"\nMentor-Only commands:" +
 				"```" +
@@ -88,12 +81,14 @@ client.on('message', async msg => {
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
+        
 		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
 			"\nHere's a few helpful commands:" +
 			"\n```" +
 			"\n!help -> See this command (but you knew that already)" +
 			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
 			"\n!join -> Enters you in private voice and chat channels to speak one-on-one with a mentor" +
+            mentor_cmds +
 			"\n```" +
 			"\nPlease remember the following items:" +
 			"\n```" +
