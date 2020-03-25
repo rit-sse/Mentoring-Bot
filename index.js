@@ -105,7 +105,7 @@ client.on('message', async msg => {
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 					{
-						id: mentor_role,
+						id: mentor_role.id,
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 				]
@@ -128,7 +128,7 @@ client.on('message', async msg => {
 					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
 				},
 				{
-					id: mentor_role,
+					id: mentor_role.id,
 					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
 				},
 			]
