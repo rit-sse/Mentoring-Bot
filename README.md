@@ -18,13 +18,14 @@ to be defined:
   tech head for information on what the test bot's id is. NEVER share the bot
   token to anyone you don't trust
 * BOT_ID -> The identification number of the bot. If setup properly,
-  this value can be obtained by right clicking on the channel and selecting
+  this value can be obtained by right clicking on the bot and selecting
   `COPY ID`
 * ANNOUNCEMENT_ID -> The id of the announcement channel. This can also be
-  obtained in the same way as the BOT_ID
-* VOICE_PARENT_ID -> The id of the voice/text category for mentees (where all
+  obtained in the same way as the BOT_ID but this time right click on the
+  channel name
+* VOICE_PARENT_ID -> The id of the voice/text header for mentees (where all
   of these channels will be created). This can also be obtained in the same
-  way as the BOT_ID
+  way as the BOT_ID but this time right click on the voice channel header
 
 All `.env` files use the pattern `key=value` and are separated by newlines.
 So the above outline should look like the following display:
