@@ -77,6 +77,7 @@ client.on('message', async msg => {
 				"```" +
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
+				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
