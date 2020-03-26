@@ -87,7 +87,7 @@ client.on('message', async msg => {
 				"```" +
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
-				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon"
+				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
@@ -123,7 +123,7 @@ client.on('message', async msg => {
 			})
 
 			if (estimated_return_time !== "") {
-				msg.reply("Estimated return time: " + estimated_return_time)
+				msg.channel.send("Estimated return time: " + estimated_return_time)
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
