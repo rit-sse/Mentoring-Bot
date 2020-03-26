@@ -175,6 +175,8 @@ client.on('message', async msg => {
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
+		} else if (msg.content.toLowerCase().startsWith("!sos")) {
+			msg.reply(`is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
 			if (!online) {
 				msg.member.addRole(online_role)
