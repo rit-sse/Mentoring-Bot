@@ -119,8 +119,8 @@ client.on('message', async msg => {
 					},
 				]
 		}).then(channel => {
-      channel.setParent(process.env.VOICE_PARENT_ID);
-      channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
+			channel.setParent(process.env.VOICE_PARENT_ID);
+			channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
 		}).catch(error => {
 			msg.reply(`Unable to create voice channel: ${error}`)
 			console.error()
@@ -149,9 +149,9 @@ client.on('message', async msg => {
 			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-      msg.reply(`Unable to create text channel: ${error}`)
-      console.error()
-    })
+			msg.reply(`Unable to create text channel: ${error}`)
+			console.error()
+		})
 	}
 
 	// Mentor specific commands
@@ -164,12 +164,12 @@ client.on('message', async msg => {
 				voice_channel_count = 0
 			})
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
-
 			cmds = msg.content.split(" ")
 			if (cmds.length != 2) {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
 				return
 			}
+
 			voice_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
 			text_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-text`)
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
@@ -188,6 +188,12 @@ client.on('message', async msg => {
 				msg.reply("is no longer mentoring")
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
+			}
+		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
+			if (online) {
+				msg.channel.send("Heeeeeeeeeey Lab! It's Trash:30. Throw out any trash around you, even if it's not yours.")
+			} else {
+				msg.reply("isn't the mentor on duty. Don't fall for their shenanigans.")
 			}
 		}
 	}
