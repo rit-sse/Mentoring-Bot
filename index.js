@@ -37,9 +37,7 @@ client.on('raw', async event => {
 
 client.on('message', async msg => {
 	// Ensuring we aren't responding to a bot
-	if (msg.member.user.bot) {
-		return
-	}
+	if (msg.author.bot) return;
 
 	// Load the roles active on the server
 	mentor_role = msg.guild.roles.find(role => role.name === "Mentor")
