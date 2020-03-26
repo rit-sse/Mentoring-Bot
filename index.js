@@ -114,7 +114,7 @@ client.on('message', async msg => {
 		if (online_mentor_afk_list.length < online_role.members.length) {
 			msg.reply(`is requesting mentoring assistance ${online_role}`)
 		} else {
-			msg.author.send("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+			msg.reply("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
 
 			let estimated_return_time = "";
 			online_mentor_afk_list.map((afk_mentor) => {
@@ -123,7 +123,7 @@ client.on('message', async msg => {
 			})
 
 			if (estimated_return_time !== "") {
-				msg.author.send("Estimated return time: " + estimated_return_time)
+				msg.reply("Estimated return time: " + estimated_return_time)
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
