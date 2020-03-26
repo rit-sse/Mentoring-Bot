@@ -109,7 +109,7 @@ client.on('message', async msg => {
 			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
 		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
-		if (online_mentor_afk_list.length < online_role.members.length) {
+		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
 			msg.reply(`is requesting mentoring assistance ${online_role}`)
 		} else {
 			msg.reply("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
