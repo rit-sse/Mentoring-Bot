@@ -39,31 +39,39 @@ client.on('message', async msg => {
 	if (msg.member.user.bot) {
 		return
 	}
+
+	// Load the roles active on the server
+	mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
+	online_role = msg.guild.roles.find(role => role.name === "Online Mentor");
+
+	// Get member roles
+	mentor = false
+	online = false
+	msg.member.roles.forEach((key, value) => {
+		if (value === mentor_role.id) {
+			mentor = true;
+		} else if (value === online_role.id) {
+			online = true;
+		}
+	});
+
+	// Prevent commands from being run after hours
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
-		if (msg.content.toLowerCase().startsWith("!") && !found) {
+		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
 			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
 			return
 		}
 	}
-	// Now handle commands
+
+	/////////////////////////////////////
+	//          Commands
+	/////////////////////////////////////
+
+	// Non-specific commands
 	if (msg.content.toLowerCase().startsWith("!help")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
 		mentor_cmds = ""
-		if (found) {
+		if (mentor) {
 			mentor_cmds = "\n```" +
 				"\nMentor-Only commands:" +
 				"```" +
@@ -73,6 +81,7 @@ client.on('message', async msg => {
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
+
 		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
 			"\nHere's a few helpful commands:" +
 			"\n```" +
@@ -91,8 +100,7 @@ client.on('message', async msg => {
 			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
 		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
-		var online = msg.guild.roles.find(role => role.name === "Online Mentor");
-		msg.reply(`is requesting mentoring assistance ${online}`)
+		msg.reply(`is requesting mentoring assistance ${online_role}`)
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
 				type: `voice`,
@@ -100,90 +108,63 @@ client.on('message', async msg => {
 					{
 						id: msg.guild.id,
 						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
-					}
+					},
+					{
+						id: msg.member.user,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
+					{
+						id: mentor_role.id,
+						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+					},
 				]
-		})
-		.then(channel => {
+		}).then(channel => {
       channel.setParent(process.env.VOICE_PARENT_ID);
       channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-			channel.overwritePermissions(user, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				CONNECT: true,
-				SPEAK: true,
-				VIEW_CHANNEL: true,
-			})
 		}).catch(error => {
-      msg.reply(`Unable to create voice channel: ${error}`)
-      console.error()
-    });
+			msg.reply(`Unable to create voice channel: ${error}`)
+			console.error()
+		});
+
 		msg.guild.createChannel(`${voice_channel_count}-text`, {
 			type: `text`,
 			permissionOverwrites: [
 				{
 					id: msg.guild.id,
 					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				}
+				},
+				{
+					id: msg.member.user,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
+				{
+					id: mentor_role.id,
+					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+				},
 			]
-		})
-		.then(channel => {
+		}).then(channel => {
 			channel.setParent(process.env.VOICE_PARENT_ID);
 			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
-			user = msg.member.user
-			mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-			channel.overwritePermissions(user, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-			channel.overwritePermissions(mentor_role, {
-				ATTACH_FILES: true,
-				READ_MESSAGE_HISTORY: true,
-				SEND_MESSAGES: true,
-				VIEW_CHANNEL: true,
-			})
-		})
-		.then(() => {
+		}).then(() => {
 			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
       msg.reply(`Unable to create text channel: ${error}`)
       console.error()
     })
-	} else if (msg.content.toLowerCase().startsWith("!close")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
-		if (found) {
+	}
+
+	// Mentor specific commands
+	if (mentor) {
+		if (msg.content.toLowerCase().startsWith("!close")) {
 			msg.reply("Shutting down all voice channels")
 			parent_channel = msg.guild.channels.find(channel => channel.id === process.env.VOICE_PARENT_ID)
 			parent_channel.children.forEach((channel) => {
 				channel.delete("closing time *Insert song here*")
 				voice_channel_count = 0
 			})
-		} else {
-			msg.reply("Insufficient Permissions")
-		}
-	} else if (msg.content.toLowerCase().startsWith("!delete")) {
+		} else if (msg.content.toLowerCase().startsWith("!delete")) {
 
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
-		if (found) {
 			cmds = msg.content.split(" ")
 			if (cmds.length != 2) {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
@@ -194,50 +175,16 @@ client.on('message', async msg => {
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
-		} else {
-			msg.reply("Insufficient Permissions")
-		}
-	} else if (msg.content.toLowerCase().startsWith("!online")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
-		if (found) {
-			var online = msg.guild.roles.find(role => role.name === "Online Mentor");
-			already_online = false
-			msg.member.roles.forEach((key, value) => {
-				if (value === online.id) {
-					already_online= true;
-				}
-			});
-			if (!already_online) {
-				msg.member.addRole(online)
+		} else if (msg.content.toLowerCase().startsWith("!online")) {
+			if (!online) {
+				msg.member.addRole(online_role)
 				msg.reply("is now mentoring")
 			} else {
 				msg.reply("is already online")
 			}
-		}
-	} else if (msg.content.toLowerCase().startsWith("!offline")) {
-		mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-		found = false
-		msg.member.roles.forEach((key, value) => {
-			if (value === mentor_role.id) {
-				found = true;
-			}
-		});
-		if (found) {
-			var online = msg.guild.roles.find(role => role.name === "Online Mentor");
-			already_online = false
-			msg.member.roles.forEach((key, value) => {
-				if (value === online.id) {
-					already_online= true;
-				}
-			});
-			if (already_online) {
-				msg.member.removeRole(online)
+		} else if (msg.content.toLowerCase().startsWith("!offline")) {
+			if (online) {
+				msg.member.removeRole(online_role)
 				msg.reply("is no longer mentoring")
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
