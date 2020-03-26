@@ -77,6 +77,7 @@ client.on('message', async msg => {
 				"```" +
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
+				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
@@ -175,6 +176,8 @@ client.on('message', async msg => {
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
+		} else if (msg.content.toLowerCase().startsWith("!sos")) {
+			msg.reply(`is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
 			if (!online) {
 				msg.member.addRole(online_role)
