@@ -42,8 +42,8 @@ client.on('message', async msg => {
 	}
 
 	// Load the roles active on the server
-	mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-	online_role = msg.guild.roles.find(role => role.name === "Online Mentor");
+	mentor_role = msg.guild.roles.find(role => role.name === "Mentor")
+	online_role = msg.guild.roles.find(role => role.name === "Online Mentor")
 
 	// Get member roles
 	mentor = false
@@ -60,8 +60,8 @@ client.on('message', async msg => {
 	if (online && online_mentor_afk_list.length) {
 		index = online_mentor_afk_list.findIndex((afk_mentor) => msg.author === afk_mentor.name)
 		if(index !== -1) {
-			online_mentor_afk_list.splice(index, 1);
-			msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:");
+			online_mentor_afk_list.splice(index, 1)
+			msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:")
 		}
 	}
 
@@ -119,11 +119,11 @@ client.on('message', async msg => {
 			let estimated_return_time = "";
 			online_mentor_afk_list.map((afk_mentor) => {
 				estimated_return_time = afk_mentor.estimated_return_time < estimated_return_time || estimated_return_time === "" ? afk_mentor.estimated_return_time : estimated_return_time
-				afk_mentor.name.send("When you get back, " + msg.author + " is looking for help.");
+				afk_mentor.name.send("When you get back, " + msg.author + " is looking for help.")
 			})
 
 			if (estimated_return_time !== "") {
-				msg.author.send("Estimated return time: " + estimated_return_time);
+				msg.author.send("Estimated return time: " + estimated_return_time)
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
@@ -217,13 +217,13 @@ client.on('message', async msg => {
 		} else if (msg.content.toLowerCase().startsWith("!brb")) {
 			if (online) {
 				let estimated_return_time = ""
-				cmds = msg.content.split(" ");
+				cmds = msg.content.split(" ")
 				if (cmds.length != 1) {
-					estimated_return_time = now.getHours() + ":" + (now.getMinutes() + parseInt(cmds[1]));
+					estimated_return_time = now.getHours() + ":" + (now.getMinutes() + parseInt(cmds[1]))
 				}
 
-				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time});
-				msg.reply("will be right back. Keep up the good work and don't miss them too much :)");
+				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
+				msg.reply("will be right back. Keep up the good work and don't miss them too much :)")
 			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
 			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
