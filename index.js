@@ -242,6 +242,14 @@ client.on('message', async msg => {
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
 			}
+		} else if (msg.content.toLowerCase().startsWith("!morning")) {
+			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
+				{files: ["https://www.poynter.org/wp-content/uploads/2019/07/shutterstock_264132746.jpg"]}
+			);
+		} else if (msg.content.toLowerCase().startsWith("!nightnight")) {
+			msg.channel.send("The SSE Mentors are getting a good night rest so they can help you out bright and early tomorrow morning.",
+				{files: ["https://media.tenor.com/images/950960797e3b597b8fedc869eabad846/tenor.gif"]}
+			);
 		}
 	}
 })
