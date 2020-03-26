@@ -217,7 +217,8 @@ client.on('message', async msg => {
 				let estimated_return_time = ""
 				cmds = msg.content.split(" ")
 				if (cmds.length != 1) {
-					estimated_return_time = now.getHours() + ":" + (now.getMinutes() + parseInt(cmds[1]))
+					now.setMinutes(now.getMinutes() + parseInt(cmds[1]))
+					estimated_return_time = now.getHours() + ":" + now.getMinutes()
 				}
 
 				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
