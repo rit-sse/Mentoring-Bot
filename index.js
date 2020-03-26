@@ -10,6 +10,8 @@ const events = {
 	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
 }
 let voice_channel_count = 0
+let online_mentor_afk_list = []
+let estimated_return_time = ""
 
 // Set the bot's presence (activity and status)
 client.on("ready", () => {
@@ -55,6 +57,14 @@ client.on('message', async msg => {
 		}
 	});
 
+	// See if a mentor returned from being afk
+	if (online && online_mentor_afk_list.length) {
+		let i = online_mentor_afk_list.indexOf(msg.author);
+		online_mentor_afk_list.splice(i, 1);
+		msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:");
+		estimated_return_time = ""
+	}
+
 	// Prevent commands from being run after hours
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17) {
@@ -77,6 +87,7 @@ client.on('message', async msg => {
 				"```" +
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
+				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon"
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
@@ -100,7 +111,18 @@ client.on('message', async msg => {
 			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
 		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
-		msg.reply(`is requesting mentoring assistance ${online_role}`)
+		if (online_mentor_afk_list.length < online_role.members.length) {
+			msg.reply(`is requesting mentoring assistance ${online_role}`)
+		} else {
+			msg.author.send("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+			if (estimated_return_time !== "") {
+				msg.author.send("Estimated return time: " + estimated_return_time);
+			}
+
+			online_mentor_afk_list.forEach((online_mentor) => {
+				online_mentor.send("When you get back, " + msg.author + " is looking for help.");
+			});
+		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
 				type: `voice`,
@@ -188,6 +210,18 @@ client.on('message', async msg => {
 				msg.reply("is no longer mentoring")
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
+			}
+		} else if (msg.content.toLowerCase().startsWith("!brb")) {
+			if (online) {
+				online_mentor_afk_list.push(msg.author);
+
+				cmds = msg.content.split(" ");
+				if (cmds.length != 1) {
+					let temp_time = now.getHours() + ":" + (now.getMinutes() + cmds[1]);
+					estimated_return_time = temp_time < estimated_return_time || estimated_return_time === "" ? temp_time : estimated_return_time;
+				}
+
+				msg.reply("will be right back. Keep up the good work and don't miss them too much :)");
 			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
 			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
