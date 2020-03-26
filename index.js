@@ -123,7 +123,7 @@ client.on('message', async msg => {
 			})
 
 			if (estimated_return_time !== "") {
-				msg.channel.send("Estimated return time: " + estimated_return_time)
+				msg.channel.send("Estimated Return Time ---> " + estimated_return_time)
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
