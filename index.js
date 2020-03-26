@@ -11,7 +11,6 @@ const events = {
 }
 let voice_channel_count = 0
 let online_mentor_afk_list = []
-let estimated_return_time = ""
 
 // Set the bot's presence (activity and status)
 client.on("ready", () => {
@@ -59,10 +58,11 @@ client.on('message', async msg => {
 
 	// See if a mentor returned from being afk
 	if (online && online_mentor_afk_list.length) {
-		let i = online_mentor_afk_list.indexOf(msg.author);
-		online_mentor_afk_list.splice(i, 1);
-		msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:");
-		estimated_return_time = ""
+		index = online_mentor_afk_list.findIndex((afk_mentor) => msg.author === afk_mentor.name)
+		if(index !== -1) {
+			online_mentor_afk_list.splice(index, 1);
+			msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:");
+		}
 	}
 
 	// Prevent commands from being run after hours
@@ -115,13 +115,16 @@ client.on('message', async msg => {
 			msg.reply(`is requesting mentoring assistance ${online_role}`)
 		} else {
 			msg.author.send("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+
+			let estimated_return_time = "";
+			online_mentor_afk_list.map((afk_mentor) => {
+				estimated_return_time = afk_mentor.estimated_return_time < estimated_return_time || estimated_return_time === "" ? afk_mentor.estimated_return_time : estimated_return_time
+				afk_mentor.name.send("When you get back, " + msg.author + " is looking for help.");
+			})
+
 			if (estimated_return_time !== "") {
 				msg.author.send("Estimated return time: " + estimated_return_time);
 			}
-
-			online_mentor_afk_list.forEach((online_mentor) => {
-				online_mentor.send("When you get back, " + msg.author + " is looking for help.");
-			});
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
@@ -213,14 +216,13 @@ client.on('message', async msg => {
 			}
 		} else if (msg.content.toLowerCase().startsWith("!brb")) {
 			if (online) {
-				online_mentor_afk_list.push(msg.author);
-
+				let estimated_return_time = ""
 				cmds = msg.content.split(" ");
 				if (cmds.length != 1) {
-					let temp_time = now.getHours() + ":" + (now.getMinutes() + cmds[1]);
-					estimated_return_time = temp_time < estimated_return_time || estimated_return_time === "" ? temp_time : estimated_return_time;
+					estimated_return_time = now.getHours() + ":" + (now.getMinutes() + parseInt(cmds[1]));
 				}
 
+				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time});
 				msg.reply("will be right back. Keep up the good work and don't miss them too much :)");
 			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
