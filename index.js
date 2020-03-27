@@ -192,6 +192,12 @@ client.on('message', async msg => {
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
 			}
+		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
+			if (online) {
+				msg.channel.send("Heeeeeeeeeey Lab! It's Trash:30. Throw out any trash around you, even if it's not yours.")
+			} else {
+				msg.reply("isn't the mentor on duty. Don't fall for their shenanigans.")
+			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
 			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
 				{files: ["https://www.poynter.org/wp-content/uploads/2019/07/shutterstock_264132746.jpg"]}
