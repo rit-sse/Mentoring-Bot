@@ -86,6 +86,7 @@ client.on('message', async msg => {
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
+				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
@@ -198,6 +199,8 @@ client.on('message', async msg => {
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
+		} else if (msg.content.toLowerCase().startsWith("!sos")) {
+			msg.reply(`is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
 			if (!online) {
 				msg.member.addRole(online_role)
@@ -223,6 +226,11 @@ client.on('message', async msg => {
 
 				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
 				msg.reply("will be right back. Keep up the good work and don't miss them too much :)")
+		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
+			if (online) {
+				msg.channel.send("Heeeeeeeeeey Lab! It's Trash:30. Throw out any trash around you, even if it's not yours.")
+			} else {
+				msg.reply("isn't the mentor on duty. Don't fall for their shenanigans.")
 			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
 			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
