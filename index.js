@@ -57,7 +57,7 @@ client.on('message', async msg => {
 
 	// Prevent commands from being run after hours
 	let now = new Date();
-	if (now.getHours() < 9 || now.getHours() > 17) {
+	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() == 0 || now.getDay() == 6) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
 			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
 			return
@@ -94,7 +94,7 @@ client.on('message', async msg => {
 			"\nPlease remember the following items:" +
 			"\n```" +
 			"\nWe are volunteers (we don't get paid)" +
-			"\nOur hours are 10 am - 6 pm" +
+			"\nOur hours are 10 am - 6 pm M-F" +
 			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
 			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
 			"\n```" +
