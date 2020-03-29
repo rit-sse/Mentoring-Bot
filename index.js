@@ -226,6 +226,7 @@ client.on('message', async msg => {
 
 				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
 				msg.reply("will be right back. Keep up the good work and don't miss them too much :)")
+			}
 		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
 			if (online) {
 				msg.channel.send("Heeeeeeeeeey Lab! It's Trash:30. Throw out any trash around you, even if it's not yours.")
