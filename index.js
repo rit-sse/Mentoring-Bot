@@ -10,6 +10,7 @@ const events = {
 	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
 }
 let voice_channel_count = 0
+let online_mentor_afk_list = []
 
 // Set the bot's presence (activity and status)
 client.on("ready", () => {
@@ -36,13 +37,11 @@ client.on('raw', async event => {
 
 client.on('message', async msg => {
 	// Ensuring we aren't responding to a bot
-	if (msg.member.user.bot) {
-		return
-	}
+	if (msg.author.bot) return;
 
 	// Load the roles active on the server
-	mentor_role = msg.guild.roles.find(role => role.name === "Mentor");
-	online_role = msg.guild.roles.find(role => role.name === "Online Mentor");
+	mentor_role = msg.guild.roles.find(role => role.name === "Mentor")
+	online_role = msg.guild.roles.find(role => role.name === "Online Mentor")
 
 	// Get member roles
 	mentor = false
@@ -54,6 +53,15 @@ client.on('message', async msg => {
 			online = true;
 		}
 	});
+
+	// See if a mentor returned from being afk
+	if (online && online_mentor_afk_list.length) {
+		index = online_mentor_afk_list.findIndex((afk_mentor) => msg.author === afk_mentor.name)
+		if(index !== -1) {
+			online_mentor_afk_list.splice(index, 1)
+			msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:")
+		}
+	}
 
 	// Prevent commands from being run after hours
 	let now = new Date();
@@ -77,6 +85,7 @@ client.on('message', async msg => {
 				"```" +
 				"\n!online -> Sets your status so you appear as the current mentor on duty" +
 				"\n!offline -> Removes your status as the current mentor on duty" +
+				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
@@ -101,7 +110,21 @@ client.on('message', async msg => {
 			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
 		)
 	} else if (msg.content.toLowerCase().startsWith("!ping")) {
-		msg.reply(`is requesting mentoring assistance ${online_role}`)
+		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
+			msg.reply(`is requesting mentoring assistance ${online_role}`)
+		} else {
+			msg.reply("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+
+			let estimated_return_time = "";
+			online_mentor_afk_list.map((afk_mentor) => {
+				estimated_return_time = afk_mentor.estimated_return_time < estimated_return_time || estimated_return_time === "" ? afk_mentor.estimated_return_time : estimated_return_time
+				afk_mentor.name.send("When you get back, " + msg.author + " is looking for help.")
+			})
+
+			if (estimated_return_time !== "") {
+				msg.channel.send("Estimated Return Time ---> " + estimated_return_time)
+			}
+		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		msg.guild.createChannel(`${voice_channel_count}-voice`, {
 				type: `voice`,
@@ -191,6 +214,18 @@ client.on('message', async msg => {
 				msg.reply("is no longer mentoring")
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
+			}
+		} else if (msg.content.toLowerCase().startsWith("!brb")) {
+			if (online) {
+				let estimated_return_time = ""
+				cmds = msg.content.split(" ")
+				if (cmds.length != 1) {
+					now.setMinutes(now.getMinutes() + parseInt(cmds[1]))
+					estimated_return_time = now.getHours() + ":" + now.getMinutes()
+				}
+
+				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
+				msg.reply("will be right back. Keep up the good work and don't miss them too much :)")
 			}
 		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
 			if (online) {
