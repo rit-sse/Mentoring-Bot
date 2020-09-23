@@ -65,9 +65,12 @@ client.on('message', async msg => {
 
 	// Prevent commands from being run after hours
 	let now = new Date();
-	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() == 0 || now.getDay() == 6) {
+	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() != 5) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-			msg.reply("Mentoring is closed for the day. Please check back between 10 am and 6 pm M-F")
+			msg.reply("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
+				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
+				"If you have just a quick question feel free to post it in " +
+				"<#691857971675791370> and someone might be able to help!")
 			return
 		}
 	}
