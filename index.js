@@ -64,23 +64,7 @@ client.on('message', async msg => {
 		}
 	}
 
-	// Prevent commands from being run after hours
-	let now = new Date();
-	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() != 5) {
-		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-			msg.reply("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
-				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
-				"If you have just a quick question feel free to post it in " +
-				"<#691857971675791370> and someone might be able to help!")
-			return
-		}
-	}
-
-	/////////////////////////////////////
-	//          Commands
-	/////////////////////////////////////
-
-	// Non-specific commands
+	//Commands that can be run at any time outside of mentoring hours
 	if (msg.content.toLowerCase().startsWith("!help")) {
 		mentor_cmds = ""
 		if (mentor) {
@@ -102,6 +86,7 @@ client.on('message', async msg => {
 			"\n!help -> See this command (but you knew that already)" +
 			"\n!ping -> Make mentors aware you need help (Please use discretion, there may only be one mentor online at a time)" +
 			"\n!join -> Enters you in private voice and chat channels to speak one-on-one with a mentor" +
+			"\n!social -> Allows you to see our discord social chats! Anyone can chat at any time and its way less serious than the rest of the mentoring discord" +
 			mentor_cmds +
 			"\n```" +
 			"\nPlease remember the following items:" +
@@ -113,7 +98,36 @@ client.on('message', async msg => {
 			"\n```" +
 			"\n*If you would like to mute this channel to prevent being spammed with notifications, right click on the channel in the navigation bar to the left, navigate to \"Notifications\" and select \"Only @mentions\"*"
 		)
-	} else if (msg.content.toLowerCase().startsWith("!ping")) {
+		return
+	} else if (msg.content.toLowerCase().startsWith("!social")) {
+		member = msg.member
+		if (member.roles.has(social_role.id)) {
+			msg.react('💩')
+		} else {
+			await member.addRole(social_role).catch(console.error)
+			msg.react('🎉')
+		}
+		return
+	}
+
+	// Prevent commands below this from being run after hours
+	let now = new Date();
+	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() != 5) {
+		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
+			msg.reply("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
+				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
+				"If you have just a quick question feel free to post it in " +
+				"<#691857971675791370> and someone might be able to help!")
+			return
+		}
+	}
+
+	/////////////////////////////////////
+	//          Commands
+	/////////////////////////////////////
+
+	// Non-specific commands
+	 else if (msg.content.toLowerCase().startsWith("!ping")) {
 		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
 			msg.reply(`is requesting mentoring assistance ${online_role}`)
 		} else {
@@ -180,10 +194,6 @@ client.on('message', async msg => {
       msg.reply(`Unable to create text channel: ${error}`)
       console.error()
     })
-	}else if (mesg.content.toLowerCase().startsWith("!social")) {
-		member = msg.member;
-		member.addRole(social_role);
-		console.log("WE did it???")
 	}
 
 	// Mentor specific commands
