@@ -42,6 +42,7 @@ client.on('message', async msg => {
 	// Load the roles active on the server
 	mentor_role = msg.guild.roles.find(role => role.name === "Mentor")
 	online_role = msg.guild.roles.find(role => role.name === "Online Mentor")
+	social_role = msg.guild.roles.find(role => role.name === "Social")
 
 	// Get member roles
 	mentor = false
@@ -176,6 +177,10 @@ client.on('message', async msg => {
       msg.reply(`Unable to create text channel: ${error}`)
       console.error()
     })
+	}else if (mesg.content.toLowerCase().startsWith("!social")) {
+		member = msg.member;
+		member.addRole(social_role);
+		console.log("WE did it???")
 	}
 
 	// Mentor specific commands
