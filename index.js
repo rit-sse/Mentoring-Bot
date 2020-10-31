@@ -26,12 +26,12 @@ client.on("ready", () => {
 client.on('raw', async event => {
 	if (!events.hasOwnProperty(event.t)) return;
 	const { d: data } = event;
-	const user = client.users.get(data.user_id);
-	const channel = client.channels.get(data.channel_id) || await user.createDM();
-	if (channel.messages.has(data.message_id)) return;
-	const message = await channel.fetchMessage(data.message_id);
+	const user = client.users.cache.get(data.user_id);
+	const channel = client.channels.cache.get(data.channel_id) || await user.createDM();
+	if (channel.messages.cache.has(data.message_id)) return;
+	const message = await channel.messages.fetch(data.message_id);
 	const emojiKey = (data.emoji.id) ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
-	const reaction = message.reactions.get(emojiKey);
+	const reaction = message.reactions.cache.get(emojiKey);
 	client.emit(events[event.t], reaction, user);
 });
 
@@ -40,14 +40,14 @@ client.on('message', async msg => {
 	if (msg.author.bot) return;
 
 	// Load the roles active on the server
-	mentor_role = msg.guild.roles.find(role => role.name === "Mentor")
-	online_role = msg.guild.roles.find(role => role.name === "Online Mentor")
-	social_role = msg.guild.roles.find(role => role.name === "Social")
+	mentor_role = msg.guild.roles.cache.find(role => role.name === "Mentor")
+	online_role = msg.guild.roles.cache.find(role => role.name === "Online Mentor")
+	social_role = msg.guild.roles.cache.find(role => role.name === "Social")
 
 	// Get member roles
 	mentor = false
 	online = false
-	msg.member.roles.forEach((key, value) => {
+	msg.member.roles.cache.forEach((key, value) => {
 		if (value === mentor_role.id) {
 			mentor = true;
 		} else if (value === online_role.id) {
@@ -92,7 +92,7 @@ client.on('message', async msg => {
 			"\nPlease remember the following items:" +
 			"\n```" +
 			"\nWe are volunteers (we don't get paid)" +
-			"\nOur hours are 10 am - 6 pm M-F" +
+			"\nOur hours are 10 am - 6 pm on Fridays" +
 			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
 			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
 			"\n```" +
@@ -102,10 +102,10 @@ client.on('message', async msg => {
 		return
 	} else if (msg.content.toLowerCase().startsWith("!social")) {
 		member = msg.member
-		if (member.roles.has(social_role.id)) {
+		if (member.roles.cache.has(social_role.id)) {
 			msg.react('💩')
 		} else {
-			await member.addRole(social_role).catch(console.error)
+			await member.roles.add(social_role).catch(console.error)
 			msg.react('🎉')
 		}
 		return
@@ -128,7 +128,7 @@ client.on('message', async msg => {
 	/////////////////////////////////////
 
 	// Non-specific commands
-	 else if (msg.content.toLowerCase().startsWith("!ping")) {
+	 if (msg.content.toLowerCase().startsWith("!ping")) {
 		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
 			msg.reply(`is requesting mentoring assistance ${online_role}`)
 		} else {
@@ -137,15 +137,15 @@ client.on('message', async msg => {
 			let estimated_return_time = "";
 			online_mentor_afk_list.map((afk_mentor) => {
 				estimated_return_time = afk_mentor.estimated_return_time < estimated_return_time || estimated_return_time === "" ? afk_mentor.estimated_return_time : estimated_return_time
-				afk_mentor.name.send("When you get back, " + msg.author + " is looking for help.")
+				afk_mentor.name.send(`When you get back, ${msg.author} is looking for help.`)
 			})
 
 			if (estimated_return_time !== "") {
-				msg.channel.send("Estimated Return Time ---> " + estimated_return_time)
+				msg.channel.send(`Estimated Return Time ---> ${estimated_return_time}`)
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
-		msg.guild.createChannel(`${voice_channel_count}-voice`, {
+		msg.guild.channels.create(`${voice_channel_count}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
 					{
@@ -169,7 +169,7 @@ client.on('message', async msg => {
 			console.error()
 		});
 
-		msg.guild.createChannel(`${voice_channel_count}-text`, {
+		msg.guild.channels.create(`${voice_channel_count}-text`, {
 			type: `text`,
 			permissionOverwrites: [
 				{
@@ -201,7 +201,7 @@ client.on('message', async msg => {
 	if (mentor) {
 		if (msg.content.toLowerCase().startsWith("!close")) {
 			msg.reply("Shutting down all voice channels")
-			parent_channel = msg.guild.channels.find(channel => channel.id === process.env.VOICE_PARENT_ID)
+			parent_channel = msg.guild.channels.cache.find(channel => channel.id === process.env.VOICE_PARENT_ID)
 			parent_channel.children.forEach((channel) => {
 				channel.delete("closing time *Insert song here*")
 				voice_channel_count = 0
@@ -213,8 +213,8 @@ client.on('message', async msg => {
 				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
 				return
 			}
-			voice_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-voice`)
-			text_channel_to_del = msg.guild.channels.find(channel => channel.name === `${cmds[1]}-text`)
+			voice_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-voice`)
+			text_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-text`)
 			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
@@ -222,14 +222,14 @@ client.on('message', async msg => {
 			msg.reply(`is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
 			if (!online) {
-				msg.member.addRole(online_role)
+				msg.member.roles.add(online_role)
 				msg.reply("is now mentoring")
 			} else {
 				msg.reply("is already online")
 			}
 		} else if (msg.content.toLowerCase().startsWith("!offline")) {
 			if (online) {
-				msg.member.removeRole(online_role)
+				msg.member.roles.remove(online_role)
 				msg.reply("is no longer mentoring")
 			} else {
 				msg.reply("isn't currently mentoring to begin with")
