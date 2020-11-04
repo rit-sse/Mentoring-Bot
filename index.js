@@ -15,9 +15,8 @@ let online_mentor_afk_list = []
 // Set the bot's presence (activity and status)
 client.on("ready", () => {
   client.user.setPresence({
-  	game: {
+  	activity: {
       name: 'Mentoring Assistance',
-      type: 'PLAYING'
     },
     status: 'Online'
   })
