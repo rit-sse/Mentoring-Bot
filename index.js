@@ -59,7 +59,7 @@ client.on('message', async msg => {
 		index = online_mentor_afk_list.findIndex((afk_mentor) => msg.author === afk_mentor.name)
 		if(index !== -1) {
 			online_mentor_afk_list.splice(index, 1)
-			msg.reply("has returned to their keyboard. They will be right with you :hugging::raised_hands:")
+			msg.channel.send("has returned to their keyboard. They will be right with you :hugging::raised_hands:")
 		}
 	}
 
@@ -79,7 +79,7 @@ client.on('message', async msg => {
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
 
-		msg.reply("Welcome to the eSSE's mentoring system! We're here to help." +
+		msg.channel.send("Welcome to the eSSE's mentoring system! We're here to help." +
 			"\nHere's a few helpful commands:" +
 			"\n```" +
 			"\n!help -> See this command (but you knew that already)" +
@@ -114,7 +114,7 @@ client.on('message', async msg => {
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() != 5) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-			msg.reply("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
+			msg.channel.send("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
 				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
 				"If you have just a quick question feel free to post it in " +
 				"<#691857971675791370> and someone might be able to help!")
@@ -129,9 +129,9 @@ client.on('message', async msg => {
 	// Non-specific commands
 	 if (msg.content.toLowerCase().startsWith("!ping")) {
 		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
-			msg.reply(`is requesting mentoring assistance ${online_role}`)
+			msg.channel.send(`<@!${msg.author.id} is requesting mentoring assistance ${online_role}`)
 		} else {
-			msg.reply("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+			msg.channel.send("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
 
 			let estimated_return_time = "";
 			online_mentor_afk_list.map((afk_mentor) => {
@@ -164,7 +164,7 @@ client.on('message', async msg => {
       channel.setParent(process.env.VOICE_PARENT_ID);
       channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
 		}).catch(error => {
-			msg.reply(`Unable to create voice channel: ${error}`)
+			msg.channel.send(`Unable to create voice channel: ${error}`)
 			console.error()
 		});
 
@@ -188,10 +188,10 @@ client.on('message', async msg => {
 			channel.setParent(process.env.VOICE_PARENT_ID);
 			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
 		}).then(() => {
-			msg.reply(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
+			msg.channel.send(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-      msg.reply(`Unable to create text channel: ${error}`)
+      msg.channel.send(`Unable to create text channel: ${error}`)
       console.error()
     })
 	}
@@ -199,7 +199,7 @@ client.on('message', async msg => {
 	// Mentor specific commands
 	if (mentor) {
 		if (msg.content.toLowerCase().startsWith("!close")) {
-			msg.reply("Shutting down all voice channels")
+			msg.channel.send("Shutting down all voice channels")
 			parent_channel = msg.guild.channels.cache.find(channel => channel.id === process.env.VOICE_PARENT_ID)
 			parent_channel.children.forEach((channel) => {
 				channel.delete("closing time *Insert song here*")
@@ -209,29 +209,29 @@ client.on('message', async msg => {
 
 			cmds = msg.content.split(" ")
 			if (cmds.length != 2) {
-				msg.reply("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
+				msg.channel.send("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
 				return
 			}
 			voice_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-voice`)
 			text_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-text`)
-			msg.reply(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
+			msg.channel.send(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
-			msg.reply(`is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
+			msg.channel.send(`<@!${msg.author.id}> is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
 			if (!online) {
 				msg.member.roles.add(online_role)
-				msg.reply("is now mentoring")
+				msg.channel.send(`<@!${msg.author.id}> is now mentoring`)
 			} else {
-				msg.reply("is already online")
+				msg.channel.send(`<@!${msg.author.id}> is already online`)
 			}
 		} else if (msg.content.toLowerCase().startsWith("!offline")) {
 			if (online) {
 				msg.member.roles.remove(online_role)
-				msg.reply("is no longer mentoring")
+				msg.channel.send(`<@!${msg.author.id}> is no longer mentoring`)
 			} else {
-				msg.reply("isn't currently mentoring to begin with")
+				msg.channel.send(`<@!${msg.author.id}> isn't currently mentoring to begin with`)
 			}
 		} else if (msg.content.toLowerCase().startsWith("!brb")) {
 			if (online) {
@@ -243,13 +243,13 @@ client.on('message', async msg => {
 				}
 
 				online_mentor_afk_list.push({name: msg.author, estimated_return_time: estimated_return_time})
-				msg.reply("will be right back. Keep up the good work and don't miss them too much :)")
+				msg.channel.send(`<@!${msg.author.id}> will be right back. Keep up the good work and don't miss them too much :)`)
 			}
 		} else if (msg.content.toLowerCase().startsWith("!trash30")) {
 			if (online) {
 				msg.channel.send("Heeeeeeeeeey Lab! It's Trash:30. Throw out any trash around you, even if it's not yours.")
 			} else {
-				msg.reply("isn't the mentor on duty. Don't fall for their shenanigans.")
+				msg.channel.send(`<@!${msg.author.id}> isn't the mentor on duty. Don't fall for their shenanigans.`)
 			}
 		} else if (msg.content.toLowerCase().startsWith("!morning")) {
 			msg.channel.send("Good morning everybody! Hope you are ready for another busy day of mentoring :smile:",
