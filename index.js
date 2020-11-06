@@ -59,7 +59,7 @@ client.on('message', async msg => {
 		index = online_mentor_afk_list.findIndex((afk_mentor) => msg.author === afk_mentor.name)
 		if(index !== -1) {
 			online_mentor_afk_list.splice(index, 1)
-			msg.channel.send("has returned to their keyboard. They will be right with you :hugging::raised_hands:")
+			msg.channel.send(`<@!${msg.author.id}> has returned to their keyboard. They will be right with you :hugging::raised_hands:`)
 		}
 	}
 
