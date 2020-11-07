@@ -79,7 +79,7 @@ client.on('message', async msg => {
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
 
-		msg.channel.send("Welcome to the eSSE's mentoring system! We're here to help." +
+		msg.channel.send(`Hi ${msg.author}, welcome to the eSSE's mentoring system! We're here to help.` +
 			"\nHere's a few helpful commands:" +
 			"\n```" +
 			"\n!help -> See this command (but you knew that already)" +
@@ -114,7 +114,7 @@ client.on('message', async msg => {
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() != 5) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-			msg.channel.send("Sorry but we currently only offer online mentoring on Fridays 10AM-6PM. " +
+			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring on Fridays 10AM-6PM. ` +
 				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
 				"If you have just a quick question feel free to post it in " +
 				"<#691857971675791370> and someone might be able to help!")
@@ -131,7 +131,7 @@ client.on('message', async msg => {
 		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
 			msg.channel.send(`<@!${msg.author.id} is requesting mentoring assistance ${online_role}`)
 		} else {
-			msg.channel.send("Hello, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.");
+			msg.channel.send(`${msg.author}, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.`);
 
 			let estimated_return_time = "";
 			online_mentor_afk_list.map((afk_mentor) => {
@@ -164,7 +164,7 @@ client.on('message', async msg => {
       channel.setParent(process.env.VOICE_PARENT_ID);
       channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
 		}).catch(error => {
-			msg.channel.send(`Unable to create voice channel: ${error}`)
+			msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
 			console.error()
 		});
 
@@ -188,10 +188,10 @@ client.on('message', async msg => {
 			channel.setParent(process.env.VOICE_PARENT_ID);
 			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
 		}).then(() => {
-			msg.channel.send(`Voice and text channels created. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
+			msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
 			voice_channel_count += 1
 		}).catch(error => {
-      msg.channel.send(`Unable to create text channel: ${error}`)
+      msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
       console.error()
     })
 	}
@@ -199,7 +199,7 @@ client.on('message', async msg => {
 	// Mentor specific commands
 	if (mentor) {
 		if (msg.content.toLowerCase().startsWith("!close")) {
-			msg.channel.send("Shutting down all voice channels")
+			msg.channel.send(`${msg.author}, shutting down all voice channels`)
 			parent_channel = msg.guild.channels.cache.find(channel => channel.id === process.env.VOICE_PARENT_ID)
 			parent_channel.children.forEach((channel) => {
 				channel.delete("closing time *Insert song here*")
@@ -209,12 +209,12 @@ client.on('message', async msg => {
 
 			cmds = msg.content.split(" ")
 			if (cmds.length != 2) {
-				msg.channel.send("Incorrect usage. Usage: !delete **Channel#** Ex: !delete 0")
+				msg.channel.send(`Incorrect usage, ${msg.author}. Usage: !delete **Channel#** Ex: \`!delete 0\``)
 				return
 			}
 			voice_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-voice`)
 			text_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-text`)
-			msg.channel.send(`Closing ${cmds[1]}-voice and ${cmds[1]}-text`)
+			msg.channel.send(`${msg.author}, closing ${cmds[1]}-voice and ${cmds[1]}-text`)
 			voice_channel_to_del.delete("closing time *Insert song here*")
 			text_channel_to_del.delete("closing time *Insert song here*")
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
