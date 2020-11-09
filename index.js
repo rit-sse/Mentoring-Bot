@@ -129,7 +129,7 @@ client.on('message', async msg => {
 	// Non-specific commands
 	 if (msg.content.toLowerCase().startsWith("!ping")) {
 		if (online_mentor_afk_list.length < online_role.members.keyArray().length) {
-			msg.channel.send(`<@!${msg.author.id} is requesting mentoring assistance ${online_role}`)
+			msg.channel.send(`${msg.author} is requesting mentoring assistance ${online_role}`)
 		} else {
 			msg.channel.send(`${msg.author}, the online mentor(s) are currently away from their computer. Please be patient, they will be right back.`);
 
