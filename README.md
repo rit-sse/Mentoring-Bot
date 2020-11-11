@@ -38,7 +38,7 @@ VOICE_PARENT_ID=[insert id here & remove brackets]
 
 ## Server setup
 If you are testing the bot using your own bot and not the SSE test channel, 
-you will need to create a role named "Mentor" and a role named "Online Mentor". 
+you will need to create three roles named "Mentor", "Online Mentor", and "Social". 
 Not doing so will cause all commands to fail. Alternatively, you can comment out 
 the role check around line 50 that starts with `msg.member.roles.cache.forEach` 
 and manually set mentor and online to true or false yourself. 
