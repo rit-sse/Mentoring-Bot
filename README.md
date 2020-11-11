@@ -8,7 +8,7 @@ A discord bot for the end of time
 * Ensure both `node.js` and `npm` are installed on your system.
 * Run `npm install` to install all of the proper packages for the bot
 * Reach out to the current tech head to be added to the test channel for the
-  bot
+  bot, or create your own test bot at https://discord.com/developers/applications
 
 ## .Env File
 This file is used to hold all of the important information in regards to the
@@ -35,6 +35,13 @@ BOT_ID=[insert id here & remove brackets]
 ANNOUNCEMENT_ID=[insert id here & remove brackets]
 VOICE_PARENT_ID=[insert id here & remove brackets]
 ```
+
+## Server setup
+If you are testing the bot using your own bot and not the SSE test channel, 
+you will need to create three roles named "Mentor", "Online Mentor", and "Social". 
+Not doing so will cause all commands to fail. Alternatively, you can comment out 
+the role check around line 50 that starts with `msg.member.roles.cache.forEach` 
+and manually set mentor and online to true or false yourself. 
 
 ## Execution
 Run `npm start` and the bot should come online if it isn't already. Any changes
