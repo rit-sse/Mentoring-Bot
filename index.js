@@ -114,12 +114,8 @@ client.on('message', async msg => {
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() > 5) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-<<<<<<< HEAD
-			msg.reply("Sorry but we currently only offer online mentoring from 10AM-6PM on Monday through Friday. " +
-=======
-			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring on Fridays 10AM-6PM. ` +
+			msg.channel.send("Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday through Friday. " +
 				"However Monday through Thursday we offer mentoring in the SSE 10AM-6PM. " +
->>>>>>> master
 				"If you have just a quick question feel free to post it in " +
 				"<#691857971675791370> and someone might be able to help!")
 			return
