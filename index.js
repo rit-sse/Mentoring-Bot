@@ -9,7 +9,7 @@ const events = {
 	MESSAGE_REACTION_ADD: 'messageReactionAdd',
 	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
 }
-let voice_channel_count = 0
+let createdChannels = [];
 let online_mentor_afk_list = []
 
 // Set the bot's presence (activity and status)
@@ -74,7 +74,6 @@ client.on('message', async msg => {
 				"\n!offline -> Removes your status as the current mentor on duty" +
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
-				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
@@ -91,7 +90,7 @@ client.on('message', async msg => {
 			"\nPlease remember the following items:" +
 			"\n```" +
 			"\nWe are volunteers (we don't get paid)" +
-			"\nOur hours are 10 am - 6 pm on Fridays" +
+			"\nOur hours are 10 am - 6 pm Monday through Friday" +
 			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
 			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
 			"\n```" +
@@ -143,7 +142,25 @@ client.on('message', async msg => {
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
-		msg.guild.channels.create(`${voice_channel_count}-voice`, {
+		msg.guild.channels.create(`${msg.author.username}'s Office`, {
+			type: `category`,
+			permissionOverwrites: [
+				{
+					id: msg.guild.id,
+					deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+				{
+					id: msg.author.id,
+					allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+				{
+					id: mentor_role.id,
+					allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+			]
+		}).then( personalCategory => {
+			createdChannels.push(personalCategory)
+			msg.guild.channels.create(`${msg.author.username}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
 					{
@@ -151,71 +168,59 @@ client.on('message', async msg => {
 						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 					{
-						id: msg.member.user,
+						id: msg.author.id,
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 					{
 						id: mentor_role.id,
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
-				]
-		}).then(channel => {
-      channel.setParent(process.env.VOICE_PARENT_ID);
-      channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
-		}).catch(error => {
-			msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
-			console.error()
-		});
+				],
+				topic: `Voice channel for mentoring ${msg.author.username}`,
+				parent: personalCategory
+			}).catch(error => {
+				msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
+				console.error()
+			});
 
-		msg.guild.channels.create(`${voice_channel_count}-text`, {
-			type: `text`,
-			permissionOverwrites: [
-				{
-					id: msg.guild.id,
-					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-				{
-					id: msg.member.user,
-					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-				{
-					id: mentor_role.id,
-					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-			]
-		}).then(channel => {
-			channel.setParent(process.env.VOICE_PARENT_ID);
-			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
-		}).then(() => {
-			msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
-			voice_channel_count += 1
-		}).catch(error => {
-      msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
-      console.error()
-    })
+			msg.guild.channels.create(`${msg.author.username}-text`, {
+				type: `text`,
+				permissionOverwrites: [
+					{
+						id: msg.guild.id,
+						deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+					{
+						id: msg.author.id,
+						allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+					{
+						id: mentor_role.id,
+						allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+				],
+				topic: `Text channel for mentoring ${msg.author.username}`,
+				parent: personalCategory
+			}).then(() => {
+				msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please step into your new office for mentoring`)
+			}).catch(error => {
+		msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
+		console.error()
+		})
+	})
 	}
 
 	// Mentor specific commands
 	if (mentor) {
 		if (msg.content.toLowerCase().startsWith("!close")) {
 			msg.channel.send(`${msg.author}, shutting down all voice channels`)
-			parent_channel = msg.guild.channels.cache.find(channel => channel.id === process.env.VOICE_PARENT_ID)
-			parent_channel.children.forEach((channel) => {
+			createdChannels.forEach((channel) => {
+				channel.children.forEach((childChannel) => {
+					childChannel.delete("closing time *Insert song here*")
+				})
 				channel.delete("closing time *Insert song here*")
-				voice_channel_count = 0
 			})
-		} else if (msg.content.toLowerCase().startsWith("!delete")) {
-
-			cmds = msg.content.split(" ")
-			if (cmds.length != 2) {
-				msg.channel.send(`Incorrect usage, ${msg.author}. Usage: !delete **Channel#** Ex: \`!delete 0\``)
-				return
-			}
-			voice_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-voice`)
-			text_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-text`)
-			msg.channel.send(`${msg.author}, closing ${cmds[1]}-voice and ${cmds[1]}-text`)
-			voice_channel_to_del.delete("closing time *Insert song here*")
-			text_channel_to_del.delete("closing time *Insert song here*")
+			createdChannels = []
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
 			msg.channel.send(`${msg.author} is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
