@@ -74,7 +74,6 @@ client.on('message', async msg => {
 				"\n!offline -> Removes your status as the current mentor on duty" +
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
-				"\n!delete [channel #] -> Removes a specified voice/text channel pair. EX: !delete 0" +
 				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
@@ -91,7 +90,7 @@ client.on('message', async msg => {
 			"\nPlease remember the following items:" +
 			"\n```" +
 			"\nWe are volunteers (we don't get paid)" +
-			"\nOur hours are 10 am - 6 pm on Fridays" +
+			"\nOur hours are 10 am - 6 pm Monday through Friday" +
 			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
 			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
 			"\n```" +
@@ -222,18 +221,6 @@ client.on('message', async msg => {
 				channel.delete("closing time *Insert song here*")
 			})
 			createdChannels = []
-		} else if (msg.content.toLowerCase().startsWith("!delete")) {
-
-			cmds = msg.content.split(" ")
-			if (cmds.length != 2) {
-				msg.channel.send(`Incorrect usage, ${msg.author}. Usage: !delete **Channel#** Ex: \`!delete 0\``)
-				return
-			}
-			voice_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-voice`)
-			text_channel_to_del = msg.guild.channels.cache.find(channel => channel.name === `${cmds[1]}-text`)
-			msg.channel.send(`${msg.author}, closing ${cmds[1]}-voice and ${cmds[1]}-text`)
-			voice_channel_to_del.delete("closing time *Insert song here*")
-			text_channel_to_del.delete("closing time *Insert song here*")
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
 			msg.channel.send(`${msg.author} is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
