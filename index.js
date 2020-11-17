@@ -143,7 +143,24 @@ client.on('message', async msg => {
 			}
 		}
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
-		msg.guild.channels.create(`${voice_channel_count}-voice`, {
+		msg.guild.channels.create(`${msg.author.username}'s Office`, {
+			type: `category`,
+			permissionOverwrites: [
+				{
+					id: msg.guild.id,
+					deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+				{
+					id: msg.author.id,
+					allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+				{
+					id: mentor_role.id,
+					allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
+				},
+			]
+		}).then( personalCategory => {
+			msg.guild.channels.create(`${voice_channel_count}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
 					{
@@ -151,48 +168,47 @@ client.on('message', async msg => {
 						deny: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 					{
-						id: msg.member.user,
+						id: msg.author.id,
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 					{
 						id: mentor_role.id,
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
-				]
-		}).then(channel => {
-      channel.setParent(process.env.VOICE_PARENT_ID);
-      channel.setTopic(`Voice channel #${voice_channel_count} for mentoring.`)
-		}).catch(error => {
-			msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
-			console.error()
-		});
+				],
+				topic: `Voice channel #${voice_channel_count} for mentoring.`,
+				parent: personalCategory
+			}).catch(error => {
+				msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
+				console.error()
+			});
 
-		msg.guild.channels.create(`${voice_channel_count}-text`, {
-			type: `text`,
-			permissionOverwrites: [
-				{
-					id: msg.guild.id,
-					deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-				{
-					id: msg.member.user,
-					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-				{
-					id: mentor_role.id,
-					allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
-				},
-			]
-		}).then(channel => {
-			channel.setParent(process.env.VOICE_PARENT_ID);
-			channel.setTopic(`Text channel #${voice_channel_count} for mentoring.`)
-		}).then(() => {
-			msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
-			voice_channel_count += 1
-		}).catch(error => {
-      msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
-      console.error()
-    })
+			msg.guild.channels.create(`${voice_channel_count}-text`, {
+				type: `text`,
+				permissionOverwrites: [
+					{
+						id: msg.guild.id,
+						deny: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+					{
+						id: msg.author.id,
+						allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+					{
+						id: mentor_role.id,
+						allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
+					},
+				],
+				topic: `Text channel #${voice_channel_count} for mentoring.`,
+				parent: personalCategory
+			}).then(() => {
+				msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
+				voice_channel_count += 1
+			}).catch(error => {
+		msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
+		console.error()
+		})
+	})
 	}
 
 	// Mentor specific commands
