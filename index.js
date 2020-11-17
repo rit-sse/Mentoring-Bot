@@ -160,7 +160,7 @@ client.on('message', async msg => {
 				},
 			]
 		}).then( personalCategory => {
-			msg.guild.channels.create(`${voice_channel_count}-voice`, {
+			msg.guild.channels.create(`${msg.author.username}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
 					{
@@ -183,7 +183,7 @@ client.on('message', async msg => {
 				console.error()
 			});
 
-			msg.guild.channels.create(`${voice_channel_count}-text`, {
+			msg.guild.channels.create(`${msg.author.username}-text`, {
 				type: `text`,
 				permissionOverwrites: [
 					{
