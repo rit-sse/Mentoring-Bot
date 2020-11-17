@@ -9,7 +9,7 @@ const events = {
 	MESSAGE_REACTION_ADD: 'messageReactionAdd',
 	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
 }
-let voice_channel_count = 0
+let createdChannels = [];
 let online_mentor_afk_list = []
 
 // Set the bot's presence (activity and status)
@@ -160,6 +160,7 @@ client.on('message', async msg => {
 				},
 			]
 		}).then( personalCategory => {
+			createdChannels.push(personalCategory)
 			msg.guild.channels.create(`${msg.author.username}-voice`, {
 				type: `voice`,
 				permissionOverwrites: [
@@ -176,7 +177,7 @@ client.on('message', async msg => {
 						allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 					},
 				],
-				topic: `Voice channel #${voice_channel_count} for mentoring.`,
+				topic: `Voice channel for mentoring ${msg.author.username}`,
 				parent: personalCategory
 			}).catch(error => {
 				msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
@@ -199,11 +200,10 @@ client.on('message', async msg => {
 						allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
 					},
 				],
-				topic: `Text channel #${voice_channel_count} for mentoring.`,
+				topic: `Text channel for mentoring ${msg.author.username}`,
 				parent: personalCategory
 			}).then(() => {
-				msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please join ${voice_channel_count}-voice and use ${voice_channel_count}-text for messaging`)
-				voice_channel_count += 1
+				msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please step into your new office for mentoring`)
 			}).catch(error => {
 		msg.channel.send(`${msg.author}, I was unable to create a text channel: ${error}`)
 		console.error()
@@ -215,11 +215,13 @@ client.on('message', async msg => {
 	if (mentor) {
 		if (msg.content.toLowerCase().startsWith("!close")) {
 			msg.channel.send(`${msg.author}, shutting down all voice channels`)
-			parent_channel = msg.guild.channels.cache.find(channel => channel.id === process.env.VOICE_PARENT_ID)
-			parent_channel.children.forEach((channel) => {
+			createdChannels.forEach((channel) => {
+				channel.children.forEach((childChannel) => {
+					childChannel.delete("closing time *Insert song here*")
+				})
 				channel.delete("closing time *Insert song here*")
-				voice_channel_count = 0
 			})
+			createdChannels = []
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
 
 			cmds = msg.content.split(" ")
