@@ -114,11 +114,7 @@ client.on('message', async msg => {
 	let now = new Date();
 	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() !=1) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-<<<<<<< HEAD
 			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday. ` +
-=======
-			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday and in person mentoring from 10AM-6PM Tuesday to Thursday at the SSE (GOL-1670). ` +
->>>>>>> 261e977a9249dd31ccddb799fb04ba0a2569abb1
 				"If you have just a quick question feel free to post it in " +
 				"<#691857971675791370> and someone might be able to help, but our mentors" +
 				"are only volunteers so please try to stick to scheduled times")
