@@ -90,7 +90,8 @@ client.on('message', async msg => {
 			"\nPlease remember the following items:" +
 			"\n```" +
 			"\nWe are volunteers (we don't get paid)" +
-			"\nOur hours are 10 am - 6 pm Monday through Friday" +
+			"\nOur mentoring hours are 10 am - 6 pm Monday through Thursday" +
+			"\nThis Spring semester we are online only mondays and in person every other day." +
 			"\nWe are an official RIT organization. PLEASE no profanity, harrassment, sexual comments, or anything else made to mentors or other mentees" +
 			"\nIf you are overly aggressive to our mentors or break any of the rules above, you will be banned permanently and you will be reported to RIT" +
 			"\n```" +
@@ -111,11 +112,12 @@ client.on('message', async msg => {
 
 	// Prevent commands below this from being run outside of mentoring hours
 	let now = new Date();
-	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() == 0 || now.getDay() == 6) {
+	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() !=1) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
-			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday through Friday. ` +
+			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday. ` +
 				"If you have just a quick question feel free to post it in " +
-				"<#691857971675791370> and someone might be able to help!")
+				"<#691857971675791370> and someone might be able to help, but our mentors" +
+				"are only volunteers so please try to stick to scheduled times")
 			return
 		}
 	}
