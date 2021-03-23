@@ -42,14 +42,12 @@ client.on('message', async msg => {
 
 	// Load the roles active on the server
 	mentor_role = msg.guild.roles.cache.find(role => role.name === "Mentor")
-	console.log("hello")
 	online_role = msg.guild.roles.cache.find(role => role.name === "Online Mentor")
 	social_role = msg.guild.roles.cache.find(role => role.name === "Social")
 
 	// Get member roles
 	mentor = false
 	online = false
-	console.log("here")
 	msg.member.roles.cache.forEach((key, value) => {
 		if (value === mentor_role.id) {
 			mentor = true;
@@ -79,7 +77,7 @@ client.on('message', async msg => {
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete {channel name} -> Deletes specified mentoring channel"
-				"\n!close -> Removes all existing voice and text channels" +
+			"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
 
@@ -231,9 +229,7 @@ client.on('message', async msg => {
 		if (msg.content.toLowerCase().startsWith("!close")) {
 			msg.channel.send(`${msg.author}, shutting down all voice channels`)
 			createdChannels.forEach((channel) => {
-				console.log(`parent:${channel.name}`)
 				channel.children.forEach((childChannel) => {
-					console.log(`child: ${childChannel.name}`)
 					childChannel.delete("closing time *Insert song here*")
 				})
 				channel.delete("closing time *Insert song here*")
@@ -242,52 +238,24 @@ client.on('message', async msg => {
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
 			const arg = msg.content.slice(7).trim();
 			const command = arg.toLowerCase();
-			i = 0
-			createdChannels.forEach((channel) => {
-				console.log(`parent:${channel.name}`)
-				channel.children.forEach((childChannel) => {
-					console.log(`child: ${childChannel.name}`)
-					if (((childChannel.name).toLowerCase()).startsWith(command)) {
-						childChannel.delete("closing time *Insert song here*")
+			if (command.length > 0) {
+				i = 0
+				createdChannels.forEach((channel) => {
+					channel.children.forEach((childChannel) => {
+						if (((childChannel.name).toLowerCase()).startsWith(command)) {
+							childChannel.delete("closing time *Insert song here*")
+						}
+					})
+					if ((channel.name).startsWith(command)) {
+						channel.delete("closing time *Insert song here*")
+						msg.channel.send(`${msg.author} deleting ${channel.name}`)
+						createdChannels.splice(i, 1)
 					}
+					i += 1
 				})
-				if ((channel.name).startsWith(command)) {
-					channel.delete("closing time *Insert song here*")
-					msg.channel.send(`${msg.author} deleting ${channel.name}`)
-					createdChannels.splice(i, 1)
-				}
-				i += 1
-			})
-			//createdChannels = []
-
-
-
-
-			/*
-
-
-			deletelater = []
-			const arg = msg.content.slice(7).trim();
-			const command = arg.toLowerCase();
-			PERMANENT_CHANNELS.forEach((name) => {
-			})
-			msg.guild.channels.cache.forEach((channel) => {
-				console.log(channel.name)
-				if (((channel.name).toLowerCase()).startsWith(command.toLowerCase())) {
-					console.log("true")
-					if (!PERMANENT_CHANNELS.includes(channel.id)) {
-						console.log('inside')
-						channel.delete()
-					}
-				}
-				console.log("3")
-			})
-			console.log(deletelater)
-			deletelater.forEach((channel) => {
-				console.log("its later")
-				channel.delete()
-			})
-			*/
+			}else {
+				msg.channel.send(`${msg.author} you need to specify what channel you want to delete`)
+			}
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
 			msg.channel.send(`${msg.author} is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
 		} else if (msg.content.toLowerCase().startsWith("!online")) {
@@ -330,6 +298,9 @@ client.on('message', async msg => {
 			msg.channel.send("The SSE Mentors are getting a good night rest so they can help you out bright and early tomorrow morning.",
 				{files: ["https://media.tenor.com/images/950960797e3b597b8fedc869eabad846/tenor.gif"]}
 			);
+		} else if (msg.content.toLowerCase().startsWith("!turtle")) {
+			msg.channel.send(":turtle:")
+			msg.delete()
 		}
 	}
 })
