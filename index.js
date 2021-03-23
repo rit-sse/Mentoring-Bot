@@ -76,7 +76,7 @@ client.on('message', async msg => {
 				"\n!offline -> Removes your status as the current mentor on duty" +
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
-				"\n!delete {channel name} -> Deletes specified mentoring channel"
+				"\n!delete {channel name} -> Deletes specified mentoring channel" +
 			"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
