@@ -9,8 +9,6 @@ const events = {
 	MESSAGE_REACTION_ADD: 'messageReactionAdd',
 	MESSAGE_REACTION_REMOVE: 'messageReactionRemove',
 }
-// Constant for which channels to not allow for deletion
-const PERMANENT_CHANNELS = [823936480056705094, 823651605554921502]
 let createdChannels = [];
 let online_mentor_afk_list = []
 
