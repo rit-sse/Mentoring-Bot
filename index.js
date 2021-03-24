@@ -237,16 +237,16 @@ client.on('message', async msg => {
 			cmds = msg.content.split(" ")
 			if (cmds.length >= 2 && cmds[0] == "!delete") {
 				const command = cmds[1].toLowerCase();
-					createdChannels.forEach((channel, i, CC) => {
-						if ((channel.name).startsWith(command)) {
-							channel.children.forEach((childChannel) => {
-								childChannel.delete("closing time *Insert song here*")
-							})
-							channel.delete("closing time *Insert song here*")
-							msg.channel.send(`${msg.author} deleting ${channel.name}`)
-							CC.splice(i, 1)
-						}
-					})
+				createdChannels.forEach((channel, i, CC) => {
+					if ((channel.name).startsWith(command)) {
+						channel.children.forEach((childChannel) => {
+							childChannel.delete("closing time *Insert song here*")
+						})
+						channel.delete("closing time *Insert song here*")
+						msg.channel.send(`${msg.author} deleting ${channel.name}`)
+						CC.splice(i, 1)
+					}
+				})
 			} else {
 				msg.channel.send(`${msg.author} Invalid parameters for command \`!delete\``)
 			}
