@@ -122,6 +122,7 @@ client.on('message', async msg => {
 			return
 		}
 	}
+
 	/////////////////////////////////////
 	//          Commands
 	/////////////////////////////////////
@@ -233,25 +234,33 @@ client.on('message', async msg => {
 			})
 			createdChannels = []
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
-			//const arg = msg.content.slice(7).trim();
 			cmds = msg.content.split(" ")
 			if (cmds.length >= 2 && cmds[0] == "!delete") {
 				const command = cmds[1].toLowerCase();
 				if (command.length > 0) {
-					i = 0
-					createdChannels.forEach((channel) => {
-						channel.children.forEach((childChannel) => {
-							if (((childChannel.name).toLowerCase()).startsWith(command)) {
-								childChannel.delete("closing time *Insert song here*")
-							}
-						})
+					//i = 0
+					createdChannels.forEach((channel, i, CC) => {
 						if ((channel.name).startsWith(command)) {
+							channel.children.forEach((childChannel, j, C) => {
+								childChannel.delete("closing time *Insert song here*")
+							})
+							channel.delete("closing time *Insert song here*")
+							msg.channel.send(`${msg.author} deleting ${channel.name}`)
+							CC.splice(i, 1)
+						}
+					})
+					/*
+						createdChannels.forEach((channel) => {
+							channel.children.forEach((childChannel) => {
+								childChannel.delete("closing time *Insert song here*")
+							})
 							channel.delete("closing time *Insert song here*")
 							msg.channel.send(`${msg.author} deleting ${channel.name}`)
 							createdChannels.splice(i, 1)
 						}
-						i += 1
-					})
+							i += 1
+						})
+						*/
 				}
 			} else {
 				msg.channel.send(`${msg.author} Invalid parameters for command \`!delete\``)
