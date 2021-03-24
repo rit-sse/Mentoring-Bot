@@ -75,7 +75,7 @@ client.on('message', async msg => {
 				"\n!brb {optional: [minutes until return]} -> Notifies any mentees that use !ping that you are afk and returning soon" +
 				"\n!sos -> In case of emergency, request help from another mentor" +
 				"\n!delete {channel name} -> Deletes specified mentoring channel" +
-			"\n!close -> Removes all existing voice and text channels" +
+				"\n!close -> Removes all existing voice and text channels" +
 				"\nNote: All commands work for you 24/7. Before 10 and after 6 mentees can't run commands"
 		}
 
@@ -122,7 +122,6 @@ client.on('message', async msg => {
 			return
 		}
 	}
-
 	/////////////////////////////////////
 	//          Commands
 	/////////////////////////////////////
@@ -234,25 +233,28 @@ client.on('message', async msg => {
 			})
 			createdChannels = []
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
-			const arg = msg.content.slice(7).trim();
-			const command = arg.toLowerCase();
-			if (command.length > 0) {
-				i = 0
-				createdChannels.forEach((channel) => {
-					channel.children.forEach((childChannel) => {
-						if (((childChannel.name).toLowerCase()).startsWith(command)) {
-							childChannel.delete("closing time *Insert song here*")
+			//const arg = msg.content.slice(7).trim();
+			cmds = msg.content.split(" ")
+			if (cmds.length >= 2 && cmds[0] == "!delete") {
+				const command = cmds[1].toLowerCase();
+				if (command.length > 0) {
+					i = 0
+					createdChannels.forEach((channel) => {
+						channel.children.forEach((childChannel) => {
+							if (((childChannel.name).toLowerCase()).startsWith(command)) {
+								childChannel.delete("closing time *Insert song here*")
+							}
+						})
+						if ((channel.name).startsWith(command)) {
+							channel.delete("closing time *Insert song here*")
+							msg.channel.send(`${msg.author} deleting ${channel.name}`)
+							createdChannels.splice(i, 1)
 						}
+						i += 1
 					})
-					if ((channel.name).startsWith(command)) {
-						channel.delete("closing time *Insert song here*")
-						msg.channel.send(`${msg.author} deleting ${channel.name}`)
-						createdChannels.splice(i, 1)
-					}
-					i += 1
-				})
-			}else {
-				msg.channel.send(`${msg.author} you need to specify what channel you want to delete`)
+				}
+			} else {
+				msg.channel.send(`${msg.author} Invalid parameters for command \`!delete\``)
 			}
 		} else if (msg.content.toLowerCase().startsWith("!sos")) {
 			msg.channel.send(`${msg.author} is in need of assistance. Would any ${mentor_role} like to volunteer as tribute to assist this hard working individual? Please, you are our only hope`, {files: ["./SOS.png"]})
@@ -296,9 +298,6 @@ client.on('message', async msg => {
 			msg.channel.send("The SSE Mentors are getting a good night rest so they can help you out bright and early tomorrow morning.",
 				{files: ["https://media.tenor.com/images/950960797e3b597b8fedc869eabad846/tenor.gif"]}
 			);
-		} else if (msg.content.toLowerCase().startsWith("!turtle")) {
-			msg.channel.send(":turtle:")
-			msg.delete()
 		}
 	}
 })
