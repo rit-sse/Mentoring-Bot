@@ -236,9 +236,8 @@ client.on('message', async msg => {
 		} else if (msg.content.toLowerCase().startsWith("!delete")) {
 			cmds = msg.content.split(" ")
 			if (cmds.length >= 2 && cmds[0] == "!delete") {
-				const command = cmds[1].toLowerCase();
 				createdChannels.forEach((channel, i, CC) => {
-					if ((channel.name).startsWith(command)) {
+					if ((channel.name).startsWith(cmds[1].toLowerCase())) {
 						channel.children.forEach((childChannel) => {
 							childChannel.delete("closing time *Insert song here*")
 						})
