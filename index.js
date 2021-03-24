@@ -237,7 +237,6 @@ client.on('message', async msg => {
 			cmds = msg.content.split(" ")
 			if (cmds.length >= 2 && cmds[0] == "!delete") {
 				const command = cmds[1].toLowerCase();
-				if (command.length > 0) {
 					createdChannels.forEach((channel, i, CC) => {
 						if ((channel.name).startsWith(command)) {
 							channel.children.forEach((childChannel) => {
@@ -248,7 +247,6 @@ client.on('message', async msg => {
 							CC.splice(i, 1)
 						}
 					})
-				}
 			} else {
 				msg.channel.send(`${msg.author} Invalid parameters for command \`!delete\``)
 			}
