@@ -291,6 +291,10 @@ client.on('message', async msg => {
 			msg.channel.send("The SSE Mentors are getting a good night rest so they can help you out bright and early tomorrow morning.",
 				{files: ["https://media.tenor.com/images/950960797e3b597b8fedc869eabad846/tenor.gif"]}
 			);
+		} else if (msg.content.toLowerCase().startsWith("!turtle")) {
+			msg.channel.send(":turtle:")
+			msg.delete()
+
 		}
 	}
 })
