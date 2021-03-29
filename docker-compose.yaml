@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  mentoring-bot:
+    build: .
+    container_name: mentoring-bot
+    restart: unless-stopped
+    environment:
+      - "BOT_TOKEN=${BOT_TOKEN}"
+      - "BOT_ID=${BOT_ID}"
+      - "ANNOUNCEMENT_ID=${ANNOUNCEMENT_ID}"
+      - "VOICE_PARENT_ID=${VOICE_PARENT_ID}"
