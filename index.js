@@ -147,12 +147,12 @@ client.on('message', async msg => {
 	} else if (msg.content.toLowerCase().startsWith("!join")) {
 		contains = false
 		msg.guild.channels.cache.forEach((channel) => {
-			if (channel.name == `${msg.author.displayname}'s Office`) {
+			if (channel.name == `${msg.author.username}'s Office`) {
 				contains = true
 			}
 		})
 		if (!contains) {
-			msg.guild.channels.create(`${msg.author.displayname}'s Office`, {
+			msg.guild.channels.create(`${msg.author.username}'s Office`, {
 				type: `category`,
 				permissionOverwrites: [
 					{
@@ -170,7 +170,7 @@ client.on('message', async msg => {
 				]
 			}).then( personalCategory => {
 				createdChannels.push(personalCategory)
-				msg.guild.channels.create(`${msg.author.displayname}-voice`, {
+				msg.guild.channels.create(`${msg.author.username}-voice`, {
 					type: `voice`,
 					permissionOverwrites: [
 						{
@@ -186,14 +186,14 @@ client.on('message', async msg => {
 							allow: [`CONNECT`, `SPEAK`, `VIEW_CHANNEL`]
 						},
 					],
-					topic: `Voice channel for mentoring ${msg.author.displayname}`,
+					topic: `Voice channel for mentoring ${msg.author.username}`,
 					parent: personalCategory
 				}).catch(error => {
 					msg.channel.send(`${msg.author}, I was unable to create a voice channel: ${error}`)
 					console.error()
 				});
 
-				msg.guild.channels.create(`${msg.author.displayname}-text`, {
+				msg.guild.channels.create(`${msg.author.username}-text`, {
 					type: `text`,
 					permissionOverwrites: [
 						{
@@ -209,7 +209,7 @@ client.on('message', async msg => {
 							allow: [`VIEW_CHANNEL`, `SEND_MESSAGES`, `READ_MESSAGE_HISTORY`, `ATTACH_FILES`]
 						},
 					],
-					topic: `Text channel for mentoring ${msg.author.displayname}`,
+					topic: `Text channel for mentoring ${msg.author.username}`,
 					parent: personalCategory
 				}).then(() => {
 					msg.channel.send(`Voice and text channels have been created, ${msg.author}. Please step into your new office for mentoring`)
