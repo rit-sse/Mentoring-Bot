@@ -237,7 +237,7 @@ client.on('message', async msg => {
 			cmds = msg.content.split(" ")
 			if (cmds.length >= 2 && cmds[0] == "!delete") {
 				createdChannels.forEach((channel, i, CC) => {
-					if ((channel.name).startsWith(cmds[1].toLowerCase())) {
+					if ((channel.name.toLowerCase()).startsWith(cmds[1].toLowerCase())) {
 						channel.children.forEach((childChannel) => {
 							childChannel.delete("closing time *Insert song here*")
 						})
