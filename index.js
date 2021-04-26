@@ -112,7 +112,8 @@ client.on('message', async msg => {
 	}
 
 	// Prevent commands below this from being run outside of mentoring hours
-	let now = new Date();
+	let tz_string = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
+	let now = new Date(tz_string);
 	if (now.getHours() < 9 || now.getHours() > 17 || now.getDay() !=1) {
 		if (msg.content.toLowerCase().startsWith("!") && !mentor) {
 			msg.channel.send(`Sorry ${msg.author}, but we currently only offer online mentoring from 10AM-6PM on Monday. ` +
